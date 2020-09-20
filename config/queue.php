@@ -68,7 +68,7 @@ return [
         'rabbitmq' => [
 
             'driver' => 'rabbitmq',
-            'queue' => env('RABBITMQ_QUEUE', 'order2.fanout'),
+            'queue' => env('RABBITMQ_QUEUE', 'email.service2'),
             'connection' => PhpAmqpLib\Connection\AMQPLazyConnection::class,
 
             'hosts' => [
@@ -82,9 +82,16 @@ return [
             ],
 
             'options' => [
+                'queue' => [
+                    'exchange' => 'email.direct',
+                    'exchange_type' => 'direct',
+                    'exchange_routing_key' => 'email2',
+                    'prioritize_delayed_messages' =>  false,
+                    'queue_max_priority' => 10,
+                ],
                 'exchange' => [
 
-                    'name' => env('RABBITMQ_EXCHANGE_NAME', 'order.fanout'),
+                    'name' => env('RABBITMQ_EXCHANGE_NAME', 'email.service'),
 
                     /*
                  * Determine if exchange should be created if it does not exist.
@@ -95,8 +102,7 @@ return [
                     /*
                  * Read more about possible values at https://www.rabbitmq.com/tutorials/amqp-concepts.html
                  */
-
-                    'type' => env('RABBITMQ_EXCHANGE_TYPE', AMQP_EX_TYPE_FANOUT),
+                    'type' => 'direct',
                     'passive' => env('RABBITMQ_EXCHANGE_PASSIVE', false)
                 ],
                 'ssl_options' => [
